@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet, Alert } from 'react-native';
 import { Checkbox, Card, Title, Paragraph } from 'react-native-paper';
+import { MaterialIcons } from '@expo/vector-icons'; // Import MaterialIcons from Expo vector icons
 
 const Task = () => {
   const [task, setTask] = useState('');
@@ -35,9 +36,31 @@ const Task = () => {
   };
 
   const handleDeleteTask = (index) => {
-    const updatedTaskList = [...taskList];
-    updatedTaskList.splice(index, 1);
-    setTaskList(updatedTaskList);
+    Alert.alert(
+      'Confirm Delete',
+      'Are you sure you want to delete this task?',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: () => {
+            const updatedTaskList = [...taskList];
+            updatedTaskList.splice(index, 1);
+
+            // Remove the index from completedTasks if it exists
+            const updatedCompletedTasks = completedTasks.filter((item) => item !== index);
+
+            setTaskList(updatedTaskList);
+            setCompletedTasks(updatedCompletedTasks);
+          },
+        },
+      ],
+      { cancelable: true }
+    );
   };
 
   const handleToggleComplete = (index) => {
@@ -100,13 +123,13 @@ const Task = () => {
                     onPress={() => handleEditTask(index)}
                     style={styles.editButton}
                   >
-                    <Text style={styles.editButtonText}>Edit</Text>
+                    <MaterialIcons name="edit" size={24} color="#007AFF" />
                   </TouchableOpacity>
                   <TouchableOpacity
                     onPress={() => handleDeleteTask(index)}
                     style={styles.deleteButton}
                   >
-                    <Text style={styles.deleteButtonText}>Delete</Text>
+                    <MaterialIcons name="delete" size={24} color="#FF3B30" />
                   </TouchableOpacity>
                 </View>
               </View>
