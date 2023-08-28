@@ -1,12 +1,12 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import React, { useState } from 'react';
 import NavigationGate from './src/NavigationGate';
+import { AuthProvider } from './src/AuthProvider'; // Correct the import path here
 
 export default function App() {
+  
   return (
-      <NavigationGate>
-        
-      </NavigationGate>
+    <AuthProvider>
+      <NavigationGate />
+    </AuthProvider>
   );
 }
-
