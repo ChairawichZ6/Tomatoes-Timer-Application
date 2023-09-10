@@ -36,12 +36,20 @@ const Profile = ({ navigation }) => {
     try {
       setUser("");
       
-      navigation.navigate("Login_Screen");
+      navigation.navigate('Login_Screen', { screen: 'Login' });
     } catch (error) {
       console.error("Error logging out:", error);
     }
   }
+  // Function to navigate to the Tutorial screen
+  const handleNavigateToTutorial = () => {
+    navigation.navigate('Tutorial'); // Replace 'Tutorial' with the actual screen name of your Tutorial component
+  };
 
+  // const handleNavigateToMusicApp = () => {
+  //   navigation.navigate('MusicApp'); // Replace 'MusicPlayer' with the actual screen name of your MusicPlayer component
+  // };
+  
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Profile</Text>
@@ -64,6 +72,8 @@ const Profile = ({ navigation }) => {
         </View>
       </View>
       <Button title="Logout" onPress={handleLogout} />
+      <Button title="Tutorial" onPress={handleNavigateToTutorial} />
+      {/* <Button title="Music Player" onPress={handleNavigateToMusicApp} /> */}
       <Text style={styles.credit}>Credit: Developed by Chairawit</Text>
     </View>
   );
@@ -127,6 +137,12 @@ const styles = StyleSheet.create({
   },
   boldText: {
     fontWeight: "bold",
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+    paddingHorizontal: 20,
   },
   credit: {
     position: "absolute",
