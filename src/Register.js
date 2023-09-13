@@ -18,20 +18,23 @@ const Register = ({ navigation }) => {
     }
 
     if (email.length < 8) {
-      Alert.alert("Error", "Email must be at least 8 characters.");
+      Alert.alert("Error", "UserID must be at least 8 characters.");
       return;
     }
-  
+
     if (password.length < 6) {
       Alert.alert("Error", "Password must be at least 6 characters.");
       return;
     }
-  
-    if (!/^\d{10}$/.test(phone)) {
-      Alert.alert("Error", "Phone number must be exactly 10 digits.");
+
+    if (!/^[0]\d{9}$/.test(phone)) {
+      Alert.alert(
+        "Error",
+        "Phone number must start with 0 and be followed by 9 digits."
+      );
       return;
     }
-  
+
     try {
       const docRef = await addDoc(collection(db, "Tomatoes_users"), {
         email: email,
@@ -50,7 +53,7 @@ const Register = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <TextInput
-        label="Email"
+        label="UserID"
         mode="outlined"
         style={styles.input}
         value={email}

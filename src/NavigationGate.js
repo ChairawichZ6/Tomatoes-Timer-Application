@@ -10,6 +10,7 @@ import Login from "./Login";
 import Register from './Register';
 import Tutorial from './Tutorial';
 import MusicApp from './MusicApp';
+import Reward from './Reward';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -47,6 +48,7 @@ const Login_Screen = () => {
       <Stack.Screen name="Login" component={Login} />
       <Stack.Screen name="Register" component={Register} />
       <Stack.Screen name="Tutorial" component={Tutorial} />
+      <Stack.Screen name="Reward" component={Reward} />
     </Stack.Navigator>
   );
 };

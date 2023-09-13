@@ -45,6 +45,10 @@ const Profile = ({ navigation }) => {
   const handleNavigateToTutorial = () => {
     navigation.navigate('Tutorial'); // Replace 'Tutorial' with the actual screen name of your Tutorial component
   };
+  // function to navigate to the Reward Screen
+  const handleNavigateToReward = () => {
+    navigation.navigate('Reward');
+  }
 
   // const handleNavigateToMusicApp = () => {
   //   navigation.navigate('MusicApp'); // Replace 'MusicPlayer' with the actual screen name of your MusicPlayer component
@@ -57,7 +61,7 @@ const Profile = ({ navigation }) => {
         <View style={styles.infoCard}>
           <Image source={require("../assets/Human.png")} style={styles.logo} />
           <View style={styles.infoTextBorder}>
-            <Text style={styles.emailText}>Email: {email}</Text>
+            <Text style={styles.emailText}>UserID: {email}</Text>
             <Text style={styles.emailText}>Password: {showPassword ? password : "********"}</Text>
             <Checkbox
               status={showPassword ? "checked" : "unchecked"}
@@ -71,10 +75,11 @@ const Profile = ({ navigation }) => {
           </View>
         </View>
       </View>
-      <Button title="Logout" onPress={handleLogout} />
       <Button title="Tutorial" onPress={handleNavigateToTutorial} />
+      <Button title="Reward" onPress={handleNavigateToReward} />
+      <Button title="Logout" onPress={handleLogout} />
       {/* <Button title="Music Player" onPress={handleNavigateToMusicApp} /> */}
-      <Text style={styles.credit}>Credit: Developed by Chairawit</Text>
+      <Text style={styles.credit}>Developed by Chairawit_63070034</Text>
     </View>
   );
 };

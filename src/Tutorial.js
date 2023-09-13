@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useRef } from "react";
 import {
   View,
   Text,
@@ -64,7 +64,9 @@ const icons = [
 const Tutorial = ({ navigation }) => {
   const [currentPage, setCurrentPage] = useState(0);
   const scrollViewRef = useRef();
-
+  
+  // const navigation = useNavigation();
+  
   const handleNextPage = () => {
     if (currentPage < tutorialData.length - 1) {
       const nextPage = currentPage + 1;
@@ -78,21 +80,14 @@ const Tutorial = ({ navigation }) => {
 
   const handleNavigateToMain = () => {
     // Navigate to the main menu screen
+    navigation.reset({
+      index: 0,
+      routes: [{ name: 'Tutorial' }],
+    });
     navigation.navigate("Tomatoes_Screen", { screen: "Tomatoes" });
   };
 
-  useEffect(() => {
-    // Scroll to the first page when the component mounts
-    scrollViewRef.current.scrollTo({
-      x: 0,
-      animated: false,
-    });
-
-    // Reset currentPage to 0 when the component unmounts
-    return () => {
-      setCurrentPage(0);
-    };
-  }, []);
+  
 
   
   const iconColors = ["indigo", "red", "green", "gold", "brown", "orange", "blue"];

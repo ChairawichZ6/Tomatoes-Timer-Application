@@ -58,6 +58,12 @@ const Task = () => {
   };
 
   const handleAddTask = async () => {
+    if (!task.trim()) {
+      // Check if the task name is empty or only contains white spaces
+      Alert.alert("Error", "Please enter a task name.");
+      return;
+    }
+
     try {
       const docRef = await addDoc(collection(db, "Task_users"), {
         task: task,
@@ -86,6 +92,12 @@ const Task = () => {
   };
 
   const handleUpdate = async () => {
+    if (!task.trim()) {
+      // Check if the task name is empty or only contains white spaces
+      Alert.alert("Error", "Please enter a task name.");
+      return;
+    }
+
     const documentRef = doc(db, "Task_users", item.id);
     const updatedData = {
       task: task,

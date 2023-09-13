@@ -47,7 +47,7 @@ const Login = ({ navigation }) => {
       />
       <Text style={styles.appName}>Tomatoes Timer</Text>
       <TextInput
-        label="Email"
+        label="UserID"
         mode="outlined"
         style={styles.input}
         value={email}
