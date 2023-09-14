@@ -89,11 +89,15 @@ const Timer = () => {
 
   const handleDurationSelected = (durationInSeconds) => {
     if (customWorkTimeInput) {
-      const selectedDurationInMinutes = parseInt(customWorkTimeInput, 10);
+      const selectedDurationInMinutes = parseFloat(customWorkTimeInput, 10);
 
-      // Check if the selected duration is within the range of 1 to 60 minutes
-      if (selectedDurationInMinutes >= 1 && selectedDurationInMinutes <= 60) {
-        const customDuration = selectedDurationInMinutes * 60; // Convert minutes to seconds
+      // Check if the selected duration is a valid integer and within the range of 1 to 60 minutes
+      if (
+        Number.isInteger(selectedDurationInMinutes) && // Check if it's an integer
+        selectedDurationInMinutes >= 1 &&
+        selectedDurationInMinutes <= 60
+      ) {
+        const customDuration = Math.round(selectedDurationInMinutes * 60); // Convert minutes to seconds and round to the nearest integer
         setCustomWorkTime(customDuration);
 
         // Update the duration for work phases only

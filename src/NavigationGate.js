@@ -9,8 +9,8 @@ import Task from "./Task";
 import Login from "./Login";
 import Register from './Register';
 import Tutorial from './Tutorial';
-import MusicApp from './MusicApp';
 import Reward from './Reward';
+import ListMusic from './ListMusic';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -22,7 +22,7 @@ const Tomaotes_Screen= () => {
         tabBarIcon: ({ focused, color, size }) => {
           let iconName;
 
-          if (route.name === 'Tomatoes') {
+          if (route.name === 'Timer') {
             iconName = 'clock-o'; 
           } else if (route.name === 'Task') {
             iconName = 'tasks'; 
@@ -35,7 +35,7 @@ const Tomaotes_Screen= () => {
         },
       })}
     >
-      <Tab.Screen name="Tomatoes" component={Timer} />
+      <Tab.Screen name="Timer" component={Timer} />
       <Tab.Screen name="Task" component={Task} />
       <Tab.Screen name="Profile" component={Profile} />
     </Tab.Navigator>
@@ -49,6 +49,7 @@ const Login_Screen = () => {
       <Stack.Screen name="Register" component={Register} />
       <Stack.Screen name="Tutorial" component={Tutorial} />
       <Stack.Screen name="Reward" component={Reward} />
+      <Stack.Screen name="ListMusic" component={ListMusic} />
     </Stack.Navigator>
   );
 };

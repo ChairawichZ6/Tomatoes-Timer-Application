@@ -128,7 +128,7 @@ const Tutorial = ({ navigation }) => {
       ) : (
         <View style={styles.buttonContainer}>
           <Button
-            title="START USING TOMATOES APPLICATION NOW"
+            title="START USING TOMATOES TIMER NOW"
             onPress={handleNavigateToMain}
             color="red"
           />

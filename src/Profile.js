@@ -1,9 +1,10 @@
 import React, { useState, useContext, useEffect } from "react";
-import { View, Text, Button, Image, StyleSheet } from "react-native";
+import { View, Text, Image, StyleSheet } from "react-native";
 import { AuthContext } from "./AuthProvider";
 import { db } from "../FirebaseConfig";
 import { doc, getDoc } from "firebase/firestore";
 import { Checkbox } from "react-native-paper";
+import { Button } from "react-native-elements";
 
 const Profile = ({ navigation }) => {
   const { user, setUser } = useContext(AuthContext);
@@ -35,25 +36,25 @@ const Profile = ({ navigation }) => {
   async function handleLogout() {
     try {
       setUser("");
-      
-      navigation.navigate('Login_Screen', { screen: 'Login' });
+
+      navigation.navigate("Login_Screen", { screen: "Login" });
     } catch (error) {
       console.error("Error logging out:", error);
     }
   }
   // Function to navigate to the Tutorial screen
   const handleNavigateToTutorial = () => {
-    navigation.navigate('Tutorial'); // Replace 'Tutorial' with the actual screen name of your Tutorial component
+    navigation.navigate("Tutorial"); // Replace 'Tutorial' with the actual screen name of Tutorial component
   };
   // function to navigate to the Reward Screen
   const handleNavigateToReward = () => {
-    navigation.navigate('Reward');
-  }
+    navigation.navigate("Reward");
+  };
 
-  // const handleNavigateToMusicApp = () => {
-  //   navigation.navigate('MusicApp'); // Replace 'MusicPlayer' with the actual screen name of your MusicPlayer component
-  // };
-  
+  const handleNavigateToMusicApp = () => {
+    navigation.navigate("ListMusic"); // Replace 'MusicPlayer' with the actual screen name of MusicPlayer component
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Profile</Text>
@@ -62,12 +63,14 @@ const Profile = ({ navigation }) => {
           <Image source={require("../assets/Human.png")} style={styles.logo} />
           <View style={styles.infoTextBorder}>
             <Text style={styles.emailText}>UserID: {email}</Text>
-            <Text style={styles.emailText}>Password: {showPassword ? password : "********"}</Text>
-            <Checkbox
-              status={showPassword ? "checked" : "unchecked"}
-              onPress={() => setShowPassword(!showPassword)}
-              color="#007bff"
-            />
+            <Text style={styles.emailText}>
+              Password: {showPassword ? password : "********"}
+              <Checkbox
+                status={showPassword ? "checked" : "unchecked"}
+                onPress={() => setShowPassword(!showPassword)}
+                color="#007bff"
+              />
+            </Text>
           </View>
           <View style={styles.row}>
             <Text style={styles.infoText}>Phone: {phone}</Text>
@@ -75,10 +78,36 @@ const Profile = ({ navigation }) => {
           </View>
         </View>
       </View>
-      <Button title="Tutorial" onPress={handleNavigateToTutorial} />
-      <Button title="Reward" onPress={handleNavigateToReward} />
-      <Button title="Logout" onPress={handleLogout} />
-      {/* <Button title="Music Player" onPress={handleNavigateToMusicApp} /> */}
+      <View style={styles.buttonRow}>
+      <Button
+        title="Reward"
+        onPress={handleNavigateToReward}
+        buttonStyle={styles.rewardButton}
+        titleStyle={styles.buttonText}
+      />
+
+      <Button
+        title="Music Player"
+        onPress={handleNavigateToMusicApp}
+        buttonStyle={styles.musicButton}
+        titleStyle={styles.buttonText}
+      />
+</View>
+<View style={styles.buttonRow}>
+      <Button
+        title="Tutorial"
+        onPress={handleNavigateToTutorial}
+        buttonStyle={styles.tutorialButton}
+        titleStyle={styles.buttonText}
+      />
+</View>
+      <Button
+        title="Logout"
+        onPress={handleLogout}
+        buttonStyle={styles.logoutButton}
+        titleStyle={styles.buttonText}
+      />
+
       <Text style={styles.credit}>Developed by Chairawit_63070034</Text>
     </View>
   );
@@ -99,7 +128,7 @@ const styles = StyleSheet.create({
   logo: {
     width: 150,
     height: 150,
-    alignSelf: "center", // Center the image
+    alignSelf: "center",
     marginBottom: 20,
   },
   userInfo: {
@@ -143,15 +172,49 @@ const styles = StyleSheet.create({
   boldText: {
     fontWeight: "bold",
   },
-  buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '100%',
-    paddingHorizontal: 20,
+  // Define the button style
+  buttonRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 20,
+  },
+  tutorialButton: {
+    width: 200,
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: "blue",
+    marginTop: 10,
+  },
+  rewardButton: {
+    width: 150,
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: "green",
+    marginTop: 10,
+    marginRight: 10,
+  },
+  musicButton: {
+    width: 150,
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: "purple",
+    marginTop: 10,
+    marginLeft: 10,
+  },
+  logoutButton: {
+    width: 200,
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: "red",
+    marginTop: 10,
+  },
+  buttonText: {
+    color: "white",
+    fontWeight: "bold",
   },
   credit: {
     position: "absolute",
-    bottom: 20,
+    bottom: 10,
     textAlign: "center",
     color: "#999",
   },
