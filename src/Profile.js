@@ -13,8 +13,31 @@ const Profile = ({ navigation }) => {
   const [age, setAge] = useState("");
   const [phone, setPhone] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [showScore, setShowScore] = useState(0);
+  const [score, setScore] = useState(0); // score for music
+  const [changeCardBG, setCardBG] = useState("");
+
+  const cardBG = [
+    "#f5f5f5",
+    "#00ffff",
+    "#4169e1",
+    "#4b0082",
+    "#98fb98",
+    "#d2691e",
+    "#dc143c",
+    "#228b22",
+    "#ff69b4",
+    "#ffd700",
+    "#ff6347",
+  ];
+
+  const customStyle = {
+    backgroundColor: changeCardBG, // Your custom styles here
+    padding: 10,
+  };
 
   useEffect(() => {
+    InitScoreBG();
     const fetchData = async () => {
       try {
         const docRef = doc(db, "Tomatoes_users", user);
@@ -24,6 +47,7 @@ const Profile = ({ navigation }) => {
         setPassword(userData.password || "");
         setAge(userData.age || "");
         setPhone(userData.phone || "");
+        setShowScore(userData.score);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -55,10 +79,31 @@ const Profile = ({ navigation }) => {
     navigation.navigate("ListMusic"); // Replace 'MusicPlayer' with the actual screen name of MusicPlayer component
   };
 
+  // update Score to color_background
+  const InitScoreBG = async () => {
+    const docRef = doc(db, "Tomatoes_users", user);
+    const docSnap = await getDoc(docRef);
+    const newScore = docSnap.data().score; // store new score
+    // condition for BG
+    const scoreThresholds = [0, 100, 150, 250, 400, 500, 650, 800, 1000, 1200, 1400];
+    let colorIndex = 0; // Initialize colorIndex to the default value
+
+    // Use a loop to find the appropriate colorIndex based on the newScore
+    for (let i = 0; i < scoreThresholds.length; i++) {
+      if (newScore > scoreThresholds[i]) {
+        colorIndex = i + 1;
+      } else {
+        break; 
+      }
+    }
+
+    setCardBG(cardBG[colorIndex]);
+  };
+
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Profile</Text>
-      <View style={styles.userInfo}>
+      <Text style={styles.header}>USER INFORMATION </Text>
+      <View style={[styles.userInfo, customStyle]}>
         <View style={styles.infoCard}>
           <Image source={require("../assets/Human.png")} style={styles.logo} />
           <View style={styles.infoTextBorder}>
@@ -71,6 +116,7 @@ const Profile = ({ navigation }) => {
                 color="#007bff"
               />
             </Text>
+            <Text style={styles.ScoreText}>Score: {showScore}</Text>
           </View>
           <View style={styles.row}>
             <Text style={styles.infoText}>Phone: {phone}</Text>
@@ -79,35 +125,35 @@ const Profile = ({ navigation }) => {
         </View>
       </View>
       <View style={styles.buttonRow}>
-      <Button
-        title="Reward"
-        onPress={handleNavigateToReward}
-        buttonStyle={styles.rewardButton}
-        titleStyle={styles.buttonText}
-      />
+        <Button
+          title="Reward"
+          onPress={handleNavigateToReward}
+          buttonStyle={styles.rewardButton}
+          titleStyle={styles.buttonText}
+        />
 
-      <Button
-        title="Music Player"
-        onPress={handleNavigateToMusicApp}
-        buttonStyle={styles.musicButton}
-        titleStyle={styles.buttonText}
-      />
-</View>
-<View style={styles.buttonRow}>
-      <Button
-        title="Tutorial"
-        onPress={handleNavigateToTutorial}
-        buttonStyle={styles.tutorialButton}
-        titleStyle={styles.buttonText}
-      />
-</View>
-      <Button
-        title="Logout"
-        onPress={handleLogout}
-        buttonStyle={styles.logoutButton}
-        titleStyle={styles.buttonText}
-      />
-
+        <Button
+          title="Music Player"
+          onPress={handleNavigateToMusicApp}
+          buttonStyle={styles.musicButton}
+          titleStyle={styles.buttonText}
+        />
+      </View>
+      <View style={styles.buttonColumn}>
+        <Button
+          title="Tutorial"
+          onPress={handleNavigateToTutorial}
+          buttonStyle={styles.tutorialButton}
+          titleStyle={styles.buttonText}
+        />
+        <Button
+          title="Logout"
+          onPress={handleLogout}
+          buttonStyle={styles.logoutButton}
+          titleStyle={styles.buttonText}
+        />
+      </View>
+      <View style={styles.creditContainer}></View>
       <Text style={styles.credit}>Developed by Chairawit_63070034</Text>
     </View>
   );
@@ -123,7 +169,7 @@ const styles = StyleSheet.create({
   header: {
     fontSize: 24,
     fontWeight: "bold",
-    marginBottom: 20,
+    marginBottom: 5,
   },
   logo: {
     width: 150,
@@ -165,10 +211,18 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   emailText: {
-    fontSize: 16,
+    fontSize: 18,
+    fontWeight: "bold",
     marginBottom: 10,
     textAlign: "center",
   },
+  ScoreText: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginBottom: 10,
+    textAlign: "center",
+  },
+
   boldText: {
     fontWeight: "bold",
   },
@@ -178,11 +232,21 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     marginBottom: 20,
   },
+  buttonColumn: {
+    alignItems: "center",
+  },
   tutorialButton: {
-    width: 200,
+    width: 180,
     height: 50,
     borderRadius: 25,
     backgroundColor: "blue",
+    marginTop: 10,
+  },
+  logoutButton: {
+    width: 180,
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: "red",
     marginTop: 10,
   },
   rewardButton: {
@@ -201,16 +265,16 @@ const styles = StyleSheet.create({
     marginTop: 10,
     marginLeft: 10,
   },
-  logoutButton: {
-    width: 200,
-    height: 50,
-    borderRadius: 25,
-    backgroundColor: "red",
-    marginTop: 10,
-  },
   buttonText: {
     color: "white",
     fontWeight: "bold",
+  },
+  logoutContainer: {
+    alignItems: "center",
+  },
+  creditContainer: {
+    alignItems: "center",
+    marginTop: 40,
   },
   credit: {
     position: "absolute",

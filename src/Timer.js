@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   StyleSheet,
   Text,
@@ -11,20 +11,28 @@ import {
   TextInput,
   Image,
   Alert,
+  ScrollView,
 } from "react-native";
 import * as Progress from "react-native-progress";
 import { Audio } from "expo-av";
 import logoImage from "../assets/TimeMode.png";
+import { Checkbox, Card, List } from "react-native-paper";
+//database
+import { db } from "../FirebaseConfig";
+import {
+  collection,
+  query,
+  where,
+  getDocs,
+  updateDoc,
+  doc,
+} from "firebase/firestore";
+import { AuthContext } from "./AuthProvider";
+import { useTimer } from "./TimerContext";
 
 const screen = Dimensions.get("window");
 
 const formatNumber = (number) => `0${number}`.slice(-2);
-const PHASES = [
-  { name: "Work", duration: 25 * 60 }, // 25 minutes (0)
-  { name: "Short Break", duration: 1 * 60 }, // 5 minutes (1)
-  { name: "Work", duration: 25 * 60 }, // 25 minutes (2)
-  { name: "Long Break", duration: 1 * 60 }, // 15 minutes
-];
 
 const getRemaining = (time) => {
   const mins = Math.floor(time / 60);
@@ -33,29 +41,40 @@ const getRemaining = (time) => {
 };
 
 const Timer = () => {
-  const [currentPhase, setCurrentPhase] = useState(0);
   const [previousPhaseName, setPreviousPhaseName] = useState(""); // Store the name of the previous phase
   // Initialize the remainingSecs based on whether custom work duration is set or not
-  const initialRemainingSecs = isCustomWorkTimeSet
-    ? customWorkTime
-    : PHASES[0].duration;
-  const [remainingSecs, setRemainingSecs] = useState(initialRemainingSecs);
 
-  const [isActive, setIsActive] = useState(false);
+  const {
+    isActive,
+    remainingSecs,
+    currentPhase,
+    customWorkTime,
+    isCustomMode,
+    PHASES,
+    setCurrentPhase,
+    setRemainingSecs,
+    setIsActive,
+    setCustomWorkTime,
+    setIsCustomMode,
+  } = useTimer();
+
+  const initialRemainingSecs = PHASES[currentPhase].duration;
+
   const [isAlertVisible, setIsAlertVisible] = useState(false);
-  const [customWorkTime, setCustomWorkTime] = useState(null); // mode time
-  const [isCustomMode, setIsCustomMode] = useState(false); // mode time
   const [isModalVisible, setIsModalVisible] = useState(false); // Control the modal visibility
   const [customWorkTimeInput, setCustomWorkTimeInput] = useState("");
-  const [isCustomWorkTimeSet, setIsCustomWorkTimeSet] = useState(false);
   const [shouldStartNextPhase, setShouldStartNextPhase] = useState(false);
   const [isTimerEndedTextVisible, setIsTimerEndedTextVisible] = useState(false);
+
+  //UserData
+  const [taskList, setTaskList] = useState([]);
+  const { user } = useContext(AuthContext);
 
   const { mins, secs } = getRemaining(remainingSecs);
   const progress = 1 - remainingSecs / PHASES[currentPhase].duration;
 
   const toggle = () => {
-    setIsActive(!isActive);
+    setIsActive((prevIsActive) => !prevIsActive);
   };
 
   const reset = () => {
@@ -112,7 +131,6 @@ const Timer = () => {
 
         setCurrentPhase(0);
         setShouldStartNextPhase(true); // start the next phase manually (first work phase)
-        setIsCustomWorkTimeSet(true);
         setIsModalVisible(false); // Close the modal
         setIsActive(false); // Timer is not started immediately
         setShouldStartNextPhase(false); // Reset the manual phase start flag
@@ -127,55 +145,95 @@ const Timer = () => {
       }
     }
   };
+  //TaskData from Task
+  const fetchData = async () => {
+    try {
+      const q = query(
+        collection(db, "Task_users"),
+        where("userId", "==", user)
+      );
+      const querySnapshot = await getDocs(q);
+
+      const newData = [];
+      querySnapshot.forEach((doc) => {
+        const data = {
+          id: doc.id,
+          task_name: doc.data().task,
+          task_des: doc.data().description,
+          status: doc.data().status,
+        };
+        newData.push(data);
+      });
+
+      setTaskList(newData); // Update the taskList state after the loop
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
+  //Task handleCheck
+  const handleCheck = async (item) => {
+    const documentRef = doc(db, "Task_users", item.id);
+    const updatedData = {
+      status: !item.status,
+    };
+    try {
+      await updateDoc(documentRef, updatedData);
+      console.log("Task status updated successfully");
+    } catch (error) {
+      console.error("Error updating task status:", error);
+    }
+    fetchData();
+  };
 
   useEffect(() => {
+    fetchData();
     let interval = null;
+
+    // Check if the Timer component has just mounted
+    if (!isActive && remainingSecs === 0) {
+      const initialRemainingSecs = PHASES[currentPhase].duration;
+      setRemainingSecs(initialRemainingSecs);
+      setIsActive(false); 
+    }
+
     if (isActive) {
-      interval = setInterval(() => {
-        setRemainingSecs((remainingSecs) => remainingSecs - 1);
-      }, 1000);
-
       if (remainingSecs === 0) {
-        // Store the name of the previous phase before updating the current phase
+        // Handle phase change or timer end when remainingSecs reaches 0
         const previousPhaseName = PHASES[currentPhase].name;
-
-        if (isCustomMode && currentPhase == 2) {
-          // If in custom mode and it's the third work phase, reset the timer to the custom work time
+        if (isCustomMode && currentPhase === 2) {
           setCurrentPhase(0);
-          setRemainingSecs(customWorkTime);
         } else {
-          // Otherwise, follow the predefined sequence
-          setCurrentPhase((currentPhase + 1) % PHASES.length);
-          setRemainingSecs(PHASES[(currentPhase + 1) % PHASES.length].duration);
+          const nextPhase = (currentPhase + 1) % PHASES.length;
+          setCurrentPhase(nextPhase);
         }
-
-        // Start shaking the device for 3 seconds when the phase ends
         Vibration.vibrate([500, 500, 500], true);
-
-        // Play a sound when the phase ends
         playSound();
-
-        // Show an alert when the phase ends
         setIsAlertVisible(true);
-
-        // Set the name of the previous phase in the state
         setPreviousPhaseName(previousPhaseName);
-
         setIsActive(false); // Pause the timer
+        return; // Exit early to prevent negative remainingSecs
       }
+      // If isActive is true and remainingSecs is not 0, decrement remainingSecs
+      interval = setInterval(() => {
+        setRemainingSecs((prevRemainingSecs) => prevRemainingSecs - 1);
+      }, 1000);
     } else if (!isActive && remainingSecs !== 0) {
       clearInterval(interval);
     }
 
+    // When isActive changes to true, reset remainingSecs to the initial duration
+    if (isActive && remainingSecs === 0) {
+      const initialRemainingSecs = PHASES[currentPhase].duration;
+      setRemainingSecs(initialRemainingSecs);
+    }
+
     return () => clearInterval(interval);
-  }, [
-    isActive,
-    remainingSecs,
-    currentPhase,
-    customWorkTime,
-    isCustomMode,
-    shouldStartNextPhase,
-  ]);
+  }, [isActive, remainingSecs, currentPhase, isCustomMode]);
+
+  const formatTime = (minutes, seconds) => {
+    return `${formatNumber(minutes)}:${formatNumber(seconds)}`;
+  };
 
   return (
     <View style={styles.container}>
@@ -189,7 +247,7 @@ const Timer = () => {
         <Text style={styles.phaseText}>
           {`${currentPhase === 0 ? "Let's Focus" : PHASES[currentPhase].name} `}
         </Text>
-        <Text style={styles.timerText}>{`${mins}:${secs}`}</Text>
+        <Text style={styles.timerText}>{formatTime(mins, secs)}</Text>
         <Progress.Bar
           progress={progress}
           width={screen.width - 40}
@@ -263,6 +321,35 @@ const Timer = () => {
           </View>
         </View>
       </Modal>
+
+      <View style={styles.taskListContainer}>
+        <Text style={styles.taskListTitle}>TASK TODAY</Text>
+        <View style={styles.separator} />
+        <ScrollView //Task Card
+          style={styles.taskList}
+          contentContainerStyle={{ marginBottom: 16 }}
+        >
+          {taskList.map((item, index) => (
+            <Card
+              key={`${item.id}_${index}`}
+              style={[styles.taskCard, item.status && styles.completedTaskCard]}
+            >
+              <List.Item
+                title={item.task_name}
+                description={item.task_des}
+                left={() => (
+                  <Checkbox
+                    status={item.status ? "checked" : "unchecked"}
+                    onPress={() => handleCheck(item)}
+                    color="#007AFF"
+                  />
+                )}
+                style={styles.taskItem}
+              />
+            </Card>
+          ))}
+        </ScrollView>
+      </View>
     </View>
   );
 };
@@ -341,12 +428,14 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0, 0, 0, 0.7)",
     alignItems: "center",
     justifyContent: "center",
+    zIndex: 1,
   },
   alertContainer: {
     backgroundColor: "#fff",
     padding: 20,
     borderRadius: 10,
     alignItems: "center",
+    zIndex: 2,
   },
   alertText: {
     fontSize: 18,
@@ -422,6 +511,69 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 10,
     color: "#FF851B",
+  },
+  // Task Card
+  taskList: {
+    flex: 1,
+  },
+  taskCard: {
+    backgroundColor: "white",
+    marginBottom: 10,
+    borderRadius: 5,
+  },
+  completedTaskCard: {
+    backgroundColor: "#C9E9C6",
+  },
+  //Task Card
+  taskItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: 16,
+  },
+  taskListContainer: {
+    flex: 1,
+    marginTop: 40,
+    marginBottom: 10,
+    marginLeft: 16,
+  },
+  taskListTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 8,
+    color: "white",
+  },
+  separator: {
+    height: 2,
+    backgroundColor: "#ccc",
+    marginHorizontal: 16,
+    marginTop: 8,
+    marginBottom: 16,
+  },
+  taskCard: {
+    marginBottom: 16,
+    borderRadius: 10,
+    elevation: 2,
+    marginLeft: 16,
+    marginRight: 16,
+  },
+  completedTaskCard: {
+    backgroundColor: "#C9E9C6",
+  },
+  taskTextContainer: {
+    flex: 1,
+  },
+  taskText: {
+    flex: 1,
+    fontSize: 16,
+  },
+  completedTaskText: {
+    textDecorationLine: "line-through",
+    color: "#999",
+  },
+  descriptionText: {
+    fontSize: 14,
+    color: "#555",
   },
 });
 

@@ -15,39 +15,39 @@ const windowWidth = Dimensions.get("window").width;
 
 const tutorialData = [
   {
-    title: "Welcome to MyApp",
+    title: "Pomodoro Technique คืออะไร",
     image: require("../assets/tutorial_picture/tutorial_1.png"),
-    description: "Swipe left to begin the tutorial.",
+    description: "เป็นเทคนิคในการจับเวลาที่มุ่งเน้นในการทำงานภายในระยะเวลาสั้น ๆ ร่วมไปกับการพักผ่อนเพื่อให้ร่างกายได้อยู่ในสภาวะสมดุลระหว่างการทำงานและการพักผ่อนโดยช่วยเพิ่มประสิทธิภาพในการทำงานรวมไปถึงลดความเสี่ยงในด้านสุขภาพ",
   },
   {
-    title: "Page 2",
+    title: "ทำงานอย่างไร ? ",
     image: require("../assets/tutorial_picture/tutorial_2.png"),
-    description: "Swipe left to continue.",
+    description: "เริ่มแรกให้เราเลือก Task ที่เราต้องการตั้งเป้าว่าจะทำให้เสร็จ จากนั้นเริ่มใช้งานตัวจับเวลาโดยจะมีเวลาให้ 25 นาทีในการทำงานที่ตั้งเป้าหมายไว้ให้สำเร็จเพื่อสร้างความสมดุลในการทำงานไม่ให้หนักจนเกินไป",
   },
   {
-    title: "Page 3",
+    title: "Stay Focus กับงานเข้าไว้",
     image: require("../assets/tutorial_picture/tutorial_3.png"),
-    description: "Keep swiping left.",
+    description: "ในช่วงเวลา 25 นาทีให้คุณมีสมาธิในการทำงานอย่าสนใจสิ่งรอบข้าง จดจ่ออยู่กับการทำงานของตัวเองให้เสร็จตามช่วงเวลาเป็นพอ",
   },
   {
-    title: "Page 4",
+    title: "Take a Break พักผ่อนซักหน่อย",
     image: require("../assets/tutorial_picture/tutorial_4.png"),
-    description: "Almost there!",
+    description: "เมื่อถึงช่วงเวลาพัก ให้พักสายตากับงานที่ทำแล้วออกไปสูดอากาศข้างนอกและเคลื่อนไหวร่างกายซักหน่อย เพื่อสุขภาพของตัวเอง",
   },
   {
-    title: "Page 5",
+    title: "ทำซ้ำอีกรอบ Repeat Cycle",
     image: require("../assets/tutorial_picture/tutorial_5.png"),
-    description: "Just a few more steps.",
+    description: "หลังจากนั้นให้ทำขั้นตอนนี้วนซ้ำไปเรื่อย ๆ จนกว่างานที่ตั้งเป้าหมายไว้จะเสร็จ โดยจะแบ่งช่วงเวลาเป็น 4 ช่วง ได้แก่ Work -> Short Break -> Work -> Long Break เพื่อปรับความคุ้นเคยของสภาพร่างกายให้เหมาะสมกับ Pomodoro Technique",
   },
   {
-    title: "Page 6",
+    title: "Gamification Idea",
     image: require("../assets/tutorial_picture/tutorial_6.png"),
-    description: "Almost done.",
+    description: "มีการนำระบบ Score เข้ามาภายใน Application เพื่อช่วยกระตุ้นผู้ใช้ในการใช้งาน โดยที่ Score ของผู้ใช้จะได้รับจากการไปเปิด Reward แผ่นภาพจากภายในแอปซึ่งจะเปิดได้ในทุก ๆ 25 นาที โดยระดับคะแนนก็จะส่งผลต่อความเปลี่ยนแปลงภายในแอปพลิเคชัน เช่น เพลง และ พื้นหลัง Profile",
   },
   {
-    title: "Page 7",
+    title: "ประโยชน์ที่จะได้รับ Benefit",
     image: require("../assets/tutorial_picture/tutorial_7.png"),
-    description: "Last step!",
+    description: "ด้วยการใช้ Pomodoro Technique จะช่วยให้การทำงานของคุณมีประสิทธิภาพที่ดีขึ้น รวมไปถึงการก่อให้เกิดความสมดุลในการบริหารจัดการ และยังได้รับแรงจูงใจในการทำงานที่ตั้งเป้าไว้ให้สำเร็จอีกด้วย",
   },
 ];
 

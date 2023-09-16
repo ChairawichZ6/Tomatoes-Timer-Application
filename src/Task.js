@@ -8,7 +8,7 @@ import {
   StyleSheet,
   Alert,
 } from "react-native";
-import { Checkbox, Card, Title, Paragraph } from "react-native-paper";
+import { Checkbox, Card, Title } from "react-native-paper";
 import { MaterialIcons } from "@expo/vector-icons"; // Import MaterialIcons from Expo vector icons
 import { db } from "../FirebaseConfig";
 import {

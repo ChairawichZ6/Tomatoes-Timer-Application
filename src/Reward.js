@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext} from "react";
 import {
   View,
   Text,
@@ -10,6 +10,10 @@ import {
 import * as Progress from "react-native-progress";
 import { useNavigation } from "@react-navigation/native";
 import { Button as PaperButton } from "react-native-paper";
+//database
+import { doc, updateDoc, getDoc } from "firebase/firestore";
+import { db } from "../FirebaseConfig";
+import { AuthContext } from "./AuthProvider";
 
 // Import your reward images
 import poor from "../assets/reward_picture/Poor.jpg";
@@ -17,11 +21,13 @@ import common from "../assets/reward_picture/Common.jpg";
 import rare from "../assets/reward_picture/Legend.jpg";
 import questionGif from "../assets/reward_picture/question.gif";
 
+
 const Reward = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [selectedPicture, setSelectedPicture] = useState(null);
   const [isReadyToOpen, setIsReadyToOpen] = useState(true); // Initially, the user is ready to open
   const [remainingTime, setRemainingTime] = useState(60); // 1 minute in seconds
+  const { user, setUser } = useContext(AuthContext); 
 
   const navigation = useNavigation();
 
@@ -65,13 +71,16 @@ const Reward = () => {
       // Define alert title and message based on the selected image
     let alertTitle;
     let alertMessage;
-    if (selectedImage === rare) {
+    if (selectedImage === rare ) {
+      UpdateScore(100);
       alertTitle = "Congratulation";
       alertMessage = "You got a Golden Tomato!";
     } else if (selectedImage === common) {
+      UpdateScore(40);
       alertTitle = "Not Bad";
       alertMessage = "You got a Silver Tomato";
     } else if (selectedImage === poor) {
+      UpdateScore(10);
       alertTitle = "Nice Try";
       alertMessage = "You got a Rotten Tomato";
     }
@@ -92,6 +101,13 @@ const Reward = () => {
   const handleNavigateToProfile = () => {
     navigation.navigate("Tomatoes_Screen", { screen: "Profile" });
   };
+  // update Score User
+  const UpdateScore  =  async (score) => {
+    const docRef =  doc(db, "Tomatoes_users", user);
+    const docSnap = await getDoc(docRef);
+    await updateDoc(docRef,{ score : docSnap.data().score + score})
+    console.log(docSnap.data());
+  }
 
   return (
     <View style={styles.container}>
