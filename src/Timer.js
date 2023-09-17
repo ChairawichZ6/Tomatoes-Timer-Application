@@ -6,7 +6,6 @@ import {
   StatusBar,
   TouchableOpacity,
   Dimensions,
-  Vibration,
   Modal,
   TextInput,
   Image,
@@ -16,7 +15,8 @@ import {
 import * as Progress from "react-native-progress";
 import { Audio } from "expo-av";
 import logoImage from "../assets/TimeMode.png";
-import { Checkbox, Card, List } from "react-native-paper";
+import { Card, List } from "react-native-paper";
+import CustomCheckbox from "./CustomCheckbox";
 //database
 import { db } from "../FirebaseConfig";
 import {
@@ -194,7 +194,7 @@ const Timer = () => {
     if (!isActive && remainingSecs === 0) {
       const initialRemainingSecs = PHASES[currentPhase].duration;
       setRemainingSecs(initialRemainingSecs);
-      setIsActive(false); 
+      setIsActive(false);
     }
 
     if (isActive) {
@@ -207,7 +207,6 @@ const Timer = () => {
           const nextPhase = (currentPhase + 1) % PHASES.length;
           setCurrentPhase(nextPhase);
         }
-        Vibration.vibrate([500, 500, 500], true);
         playSound();
         setIsAlertVisible(true);
         setPreviousPhaseName(previousPhaseName);
@@ -338,10 +337,10 @@ const Timer = () => {
                 title={item.task_name}
                 description={item.task_des}
                 left={() => (
-                  <Checkbox
+                  <CustomCheckbox
                     status={item.status ? "checked" : "unchecked"}
                     onPress={() => handleCheck(item)}
-                    color="#007AFF"
+                    color={item.status ? "green" : "gray"} // Use green when checked, blue when unchecked
                   />
                 )}
                 style={styles.taskItem}

@@ -1,10 +1,15 @@
 import React, { useState, useContext, useEffect } from "react";
-import { View, Text, Image, StyleSheet } from "react-native";
+import { View, Text, Image, StyleSheet, Dimensions } from "react-native";
 import { AuthContext } from "./AuthProvider";
 import { db } from "../FirebaseConfig";
 import { doc, getDoc } from "firebase/firestore";
-import { Checkbox } from "react-native-paper";
 import { Button } from "react-native-elements";
+import CustomCheckbox from "./CustomCheckbox";
+
+const screenWidth = Dimensions.get("window").width;
+// Calculate the font size based on the screen width
+const fontSize = screenWidth > 360 ? 24 : 16;
+const buttonSizeFactor = screenWidth >= 768 ? 1.5 : 1;
 
 const Profile = ({ navigation }) => {
   const { user, setUser } = useContext(AuthContext);
@@ -85,7 +90,9 @@ const Profile = ({ navigation }) => {
     const docSnap = await getDoc(docRef);
     const newScore = docSnap.data().score; // store new score
     // condition for BG
-    const scoreThresholds = [0, 100, 150, 250, 400, 500, 650, 800, 1000, 1200, 1400];
+    const scoreThresholds = [
+      0, 100, 150, 250, 400, 500, 650, 800, 1000, 1200, 1400,
+    ];
     let colorIndex = 0; // Initialize colorIndex to the default value
 
     // Use a loop to find the appropriate colorIndex based on the newScore
@@ -93,7 +100,7 @@ const Profile = ({ navigation }) => {
       if (newScore > scoreThresholds[i]) {
         colorIndex = i + 1;
       } else {
-        break; 
+        break;
       }
     }
 
@@ -108,14 +115,16 @@ const Profile = ({ navigation }) => {
           <Image source={require("../assets/Human.png")} style={styles.logo} />
           <View style={styles.infoTextBorder}>
             <Text style={styles.emailText}>UserID: {email}</Text>
-            <Text style={styles.emailText}>
-              Password: {showPassword ? password : "********"}
-              <Checkbox
+            <View style={styles.passwordContainer}>
+              <Text style={[styles.passwordText, { marginRight: 10 }]}>
+                Password: {showPassword ? password : "********"}
+              </Text>
+              <CustomCheckbox
                 status={showPassword ? "checked" : "unchecked"}
                 onPress={() => setShowPassword(!showPassword)}
-                color="#007bff"
+                color={showPassword ? "green" : "gray"}
               />
-            </Text>
+            </View>
             <Text style={styles.ScoreText}>Score: {showScore}</Text>
           </View>
           <View style={styles.row}>
@@ -128,28 +137,64 @@ const Profile = ({ navigation }) => {
         <Button
           title="Reward"
           onPress={handleNavigateToReward}
-          buttonStyle={styles.rewardButton}
+          buttonStyle={[
+            styles.rewardButton,
+            screenWidth >= 768
+              ? {
+                  width: 150 * buttonSizeFactor,
+                  height: 50 * buttonSizeFactor,
+                  borderRadius: 25 * buttonSizeFactor,
+                }
+              : null,
+          ]}
           titleStyle={styles.buttonText}
         />
 
         <Button
           title="Music Player"
           onPress={handleNavigateToMusicApp}
-          buttonStyle={styles.musicButton}
+          buttonStyle={[
+            styles.musicButton,
+            screenWidth >= 768
+              ? {
+                  width: 150 * buttonSizeFactor,
+                  height: 50 * buttonSizeFactor,
+                  borderRadius: 25 * buttonSizeFactor,
+                }
+              : null,
+          ]}
           titleStyle={styles.buttonText}
         />
       </View>
-      <View style={styles.buttonColumn}>
+      <View style={styles.buttonRow}>
         <Button
           title="Tutorial"
           onPress={handleNavigateToTutorial}
-          buttonStyle={styles.tutorialButton}
+          buttonStyle={[
+            styles.tutorialButton,
+            screenWidth >= 768
+              ? {
+                  width: 150 * buttonSizeFactor,
+                  height: 50 * buttonSizeFactor,
+                  borderRadius: 25 * buttonSizeFactor,
+                }
+              : null,
+          ]}
           titleStyle={styles.buttonText}
         />
         <Button
           title="Logout"
           onPress={handleLogout}
-          buttonStyle={styles.logoutButton}
+          buttonStyle={[
+            styles.logoutButton,
+            screenWidth >= 768
+              ? {
+                  width: 150 * buttonSizeFactor,
+                  height: 50 * buttonSizeFactor,
+                  borderRadius: 25 * buttonSizeFactor,
+                }
+              : null,
+          ]}
           titleStyle={styles.buttonText}
         />
       </View>
@@ -167,9 +212,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   header: {
-    fontSize: 24,
+    fontSize: fontSize,
     fontWeight: "bold",
-    marginBottom: 5,
+    marginBottom: 10,
   },
   logo: {
     width: 150,
@@ -180,7 +225,10 @@ const styles = StyleSheet.create({
   userInfo: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginBottom: 20,
+    marginBottom: 10,
+    padding: 10,
+    maxWidth: 400,
+    marginTop: 20,
   },
   infoCard: {
     flex: 1,
@@ -217,53 +265,62 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   ScoreText: {
-    fontSize: 20,
+    fontSize: 24,
     fontWeight: "bold",
     marginBottom: 10,
     textAlign: "center",
+    color: "#e80f0e",
+    backgroundColor: "#FFDF00",
+    padding: 10,
+    borderRadius: 10,
+    borderWidth: 2,
+    borderColor: "#F28500",
   },
-
-  boldText: {
+  passwordContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    width: "100%",
+    textAlign: "center",
+  },
+  passwordText: {
+    fontSize: 18,
     fontWeight: "bold",
   },
   // Define the button style
   buttonRow: {
     flexDirection: "row",
     justifyContent: "space-between",
+    flexWrap: "wrap",
     marginBottom: 20,
   },
-  buttonColumn: {
-    alignItems: "center",
-  },
-  tutorialButton: {
-    width: 180,
-    height: 50,
-    borderRadius: 25,
-    backgroundColor: "blue",
-    marginTop: 10,
-  },
-  logoutButton: {
-    width: 180,
-    height: 50,
-    borderRadius: 25,
-    backgroundColor: "red",
-    marginTop: 10,
-  },
-  rewardButton: {
+  button: {
     width: 150,
     height: 50,
     borderRadius: 25,
-    backgroundColor: "green",
-    marginTop: 10,
+    marginBottom: 10,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  tutorialButton: {
+    backgroundColor: "blue",
+    // borderRadius: 25,
     marginRight: 10,
   },
   musicButton: {
-    width: 150,
-    height: 50,
-    borderRadius: 25,
     backgroundColor: "purple",
-    marginTop: 10,
-    marginLeft: 10,
+    // borderRadius: 25,
+    marginRight: 10,
+  },
+  rewardButton: {
+    backgroundColor: "green",
+    // borderRadius: 25,
+    marginRight: 10,
+  },
+  logoutButton: {
+    backgroundColor: "red",
+    // borderRadius: 25,
+    marginLeft: screenWidth <= 360 ? "5%" : 20,
   },
   buttonText: {
     color: "white",
@@ -274,11 +331,9 @@ const styles = StyleSheet.create({
   },
   creditContainer: {
     alignItems: "center",
-    marginTop: 40,
+    marginTop: "auto",
   },
   credit: {
-    position: "absolute",
-    bottom: 10,
     textAlign: "center",
     color: "#999",
   },

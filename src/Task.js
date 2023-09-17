@@ -8,7 +8,8 @@ import {
   StyleSheet,
   Alert,
 } from "react-native";
-import { Checkbox, Card, Title } from "react-native-paper";
+import { Card, Title } from "react-native-paper";
+import CustomCheckbox from './CustomCheckbox';
 import { MaterialIcons } from "@expo/vector-icons"; // Import MaterialIcons from Expo vector icons
 import { db } from "../FirebaseConfig";
 import {
@@ -191,12 +192,11 @@ const Task = () => {
           >
             <Card.Content>
               <View style={styles.taskItem}>
-                <Checkbox
+                <CustomCheckbox
                   status={
-                    item.status ? "checked" : "unchecked"
-                  }
+                    item.status ? "checked" : "unchecked"}
                   onPress={() => handleCheck(item)}
-                  color="#007AFF"
+                  color={item.status ? "green" : "gray"}
                 />
                 <View style={styles.taskTextContainer}>
                   <Text

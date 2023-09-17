@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, Image, Button, Alert } from "react-native";
 import { Audio } from "expo-av";
 import Slider from "@react-native-community/slider";
 import Icon from "react-native-vector-icons/MaterialIcons";
-
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 //database
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "../FirebaseConfig";
@@ -79,7 +79,7 @@ const ListMusic = ({ navigation }) => {
       source: require("../audio/M10.mp3"),
       title: "The Last Song",
       cover: require("../assets/Tomato_Music_T2.jpg"),
-      score: 900,
+      score: 1000,
     },
   ];
 
@@ -91,6 +91,42 @@ const ListMusic = ({ navigation }) => {
   const { user, setUser } = useContext(AuthContext); //database user
   const [score, setScore] = useState(0); // score for music
   const [isAudioLoading, setIsAudioLoading] = useState(false);
+
+  const updateTrackIndexBasedOnScore = () => {
+    // Find the index of the audio track based on the user's score
+    const index = audioFiles.findIndex((audio) => score >= audio.score);
+    if (index !== -1) {
+      setCurrentTrackIndex(index);
+    }
+  };
+
+  const fetchAndUpdateScore = async () => {
+    try {
+      const docRef = doc(db, "Tomatoes_users", user);
+      const docSnap = await getDoc(docRef);
+      const updatedScore = docSnap.data().score;
+      setScore(updatedScore);
+      updateTrackIndexBasedOnScore();
+    } catch (error) {
+      console.error("Error fetching score:", error);
+    }
+  };
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener("focus", () => {
+      fetchAndUpdateScore();
+    });
+
+    return unsubscribe;
+  }, [navigation]);
+
+  // Use useFocusEffect to update the current track index based on the user's score
+  useFocusEffect(
+    React.useCallback(() => {
+      updateTrackIndexBasedOnScore();
+      console.log("Updated score:", score);
+    }, [score]) // Re-run the effect when the score changes
+  );
 
   const loadAudio = async (audio) => {
     if (soundObject.current) {
@@ -135,7 +171,7 @@ const ListMusic = ({ navigation }) => {
         }
       }
     } else {
-      Alert.alert("Your SCORE ", "MUST ABOVE THAN " + audioFiles[index].score, [
+      Alert.alert("Your SCORE ", "MUST OVER THAN " + audioFiles[index].score, [
         {
           text: "OK",
           onPress: () => console.log("OK Pressed"),
@@ -172,34 +208,57 @@ const ListMusic = ({ navigation }) => {
       setPosition(newPosition);
     }
   };
+  const isMounted = useRef(true); //ref Track
+  const playbackStatusSubscriptionRef = useRef(); //Ref to hold sub
 
   useEffect(() => {
-    InitScoreMusic();
+    fetchAndUpdateScore();
     soundObject.current = new Audio.Sound();
-    // Preload the first audio file
-    (async () => {
-      const { sound } = await Audio.Sound.createAsync(audioFiles[0].source);
-      soundObject.current = sound;
-      // Start playing "Audio 1" by default
-      await playAudio(audioFiles[0], 0);
-    })();
+
+    const loadAndPlayAudio = async (index) => {
+      try {
+        await loadAudio(audioFiles[index]);
+        if (!isMounted.current) return; // Check if component is still mounted
+        await soundObject.current.playAsync();
+        setIsPlaying(true);
+        setCurrentTrackIndex(index);
+      } catch (error) {
+        console.error("Error playing audio:", error);
+      }
+    };
+
+    loadAndPlayAudio(0); // Play the first audio initially
 
     return () => {
+      isMounted.current = false;
       if (soundObject.current) {
         soundObject.current.unloadAsync();
+      }
+      if (playbackStatusSubscriptionRef.current) {
+        playbackStatusSubscriptionRef.current.remove();
       }
     };
   }, []);
 
-  const currentAudio = audioFiles[currentTrackIndex];
+  // Use this useEffect to restart playback when the current track index changes
+  useEffect(() => {
+    if (currentTrackIndex !== null) {
+      playbackStatusSubscriptionRef.current =
+        soundObject.current.setOnPlaybackStatusUpdate(async (status) => {
+          if (status.didJustFinish && isMounted.current) {
+            // Song has finished, restart playback from the beginning
+            await soundObject.current.replayAsync();
+          }
+        });
+    } else {
+      // Remove the subscription when currentTrackIndex is null
+      if (playbackStatusSubscriptionRef.current) {
+        playbackStatusSubscriptionRef.current.remove();
+      }
+    }
+  }, [currentTrackIndex]);
 
-  // update Score to Music
-  const InitScoreMusic = async () => {
-    const docRef = doc(db, "Tomatoes_users", user);
-    const docSnap = await getDoc(docRef);
-    await setScore(docSnap.data().score);
-    // console.log(score);
-  };
+  const currentAudio = audioFiles[currentTrackIndex];
 
   return (
     <View style={styles.container}>

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { View, StyleSheet } from "react-native";
 import { TextInput, Button } from "react-native-paper";
 import { db } from "../FirebaseConfig";
-import { collection, addDoc } from "firebase/firestore";
+import { collection, addDoc, query, where, getDocs, } from "firebase/firestore";
 import { Alert } from "react-native";
 
 const Register = ({ navigation }) => {
@@ -10,6 +10,7 @@ const Register = ({ navigation }) => {
   const [password, setPassword] = useState("");
   const [age, setAge] = useState("");
   const [phone, setPhone] = useState("");
+  const [score, setScore] = useState(0);
 
   async function handleRegister() {
     if (!email || !password || !age || !phone) {
@@ -35,12 +36,33 @@ const Register = ({ navigation }) => {
       return;
     }
 
+    // Check if a user with the same email already exists
+    const querySnapshot = await getDocs(
+      query(collection(db, "Tomatoes_users"), where("email", "==", email))
+    );
+
+    if (!querySnapshot.empty) {
+      Alert.alert("Error", "User with this email already exists.");
+      return;
+    }
+
+    // Check if a user with the same password already exists
+    const passwordQuerySnapshot = await getDocs(
+      query(collection(db, "Tomatoes_users"), where("password", "==", password))
+    );
+
+    if (!passwordQuerySnapshot.empty) {
+      Alert.alert("Error", "User with this password already exists.");
+      return;
+    }
+
     try {
       const docRef = await addDoc(collection(db, "Tomatoes_users"), {
         email: email,
         password: password,
         age: age,
         phone: phone,
+        score: score,
       });
       console.log("Document written with ID: ", docRef.id);
       Alert.alert("Success", "Registration successful.");
