@@ -1,6 +1,6 @@
 import React, { useContext, useState } from "react";
 import { View, Text, Image, StyleSheet, Alert } from "react-native";
-import { TextInput, Button } from "react-native-paper"; // decorate screen
+import { TextInput, Button, IconButton } from "react-native-paper"; // decorate screen
 import { db } from "../FirebaseConfig";
 import { collection, query, where, getDocs } from "firebase/firestore";
 import {AuthContext} from "./AuthProvider";
@@ -8,7 +8,8 @@ import {AuthContext} from "./AuthProvider";
 const Login = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { user, setUser } = useContext(AuthContext); 
+  const [showPassword, setShowPassword] = useState(false); 
+  const { user, setUser } = useContext(AuthContext);
 
   async function handleLogin() {
     try {
@@ -54,14 +55,21 @@ const Login = ({ navigation }) => {
         value={email}
         onChangeText={setEmail}
       />
-      <TextInput
-        label="Password"
-        mode="outlined"
-        style={styles.input}
-        secureTextEntry
-        value={password}
-        onChangeText={setPassword}
-      />
+      <View style={styles.passwordInputContainer}>
+        <TextInput
+          label="Password"
+          mode="outlined"
+          style={styles.passwordInput}
+          secureTextEntry={!showPassword}
+          value={password}
+          onChangeText={setPassword}
+        />
+        <IconButton
+          icon={showPassword ? "eye-off" : "eye"}
+          onPress={() => setShowPassword(!showPassword)}
+          style={styles.eyeIcon}
+        />
+      </View>
       <Button mode="contained" style={styles.button} onPress={handleLogin}>
         Login
       </Button>
@@ -98,14 +106,31 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     borderRadius: 5,
   },
-  button: {
+  passwordInputContainer: {
     width: "80%",
+    position: "relative",
+  },
+  passwordInput: {
+    width: "100%",
+    padding: 10,
+    borderRadius: 5,
+    marginBottom: 40, 
+  },
+  button: {
+    width: "30%",
     marginBottom: 10,
+    zIndex: 1,
   },
   registerText: {
     fontWeight: "bold",
     fontSize: 16,
     marginTop: 10,
+  },
+  eyeIcon: {
+    position: "absolute",
+    top: 14,
+    right: 10,
+    zIndex: 2, 
   },
 });
 
