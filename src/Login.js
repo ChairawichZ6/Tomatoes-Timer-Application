@@ -1,5 +1,5 @@
 import React, { useContext, useState } from "react";
-import { View, Text, Image, StyleSheet } from "react-native";
+import { View, Text, Image, StyleSheet, Alert } from "react-native";
 import { TextInput, Button } from "react-native-paper"; // decorate screen
 import { db } from "../FirebaseConfig";
 import { collection, query, where, getDocs } from "firebase/firestore";
@@ -21,7 +21,7 @@ const Login = ({ navigation }) => {
       const querySnapshot = await getDocs(q);
   
       if (querySnapshot.empty) {
-        alert("Login Failed", "No user found with this email.");
+        Alert.alert("Login Failed", "No user found with this account.");
         return; // Exit the function if no matching user is found
       }
   
@@ -29,6 +29,7 @@ const Login = ({ navigation }) => {
         console.log(doc.id, " => ", doc.data());
         setUser(doc.id);
         console.log("success");
+        Alert.alert("Login Successfully");
       });
       
       navigation.navigate("Tomatoes_Screen");
@@ -47,7 +48,7 @@ const Login = ({ navigation }) => {
       />
       <Text style={styles.appName}>Tomatoes Timer</Text>
       <TextInput
-        label="UserID"
+        label="Username"
         mode="outlined"
         style={styles.input}
         value={email}
@@ -71,14 +72,6 @@ const Login = ({ navigation }) => {
       >
         Register
       </Button>
-      <Text style={styles.registerText}>
-        Don't have an account?{" "}
-        <Text
-          style={{ ...styles.registerLink, color: "#007bff" }}
-        >
-          Register Now!
-        </Text>
-      </Text>
     </View>
   );
 };

@@ -75,7 +75,7 @@ const Register = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <TextInput
-        label="UserID"
+        label="Username"
         mode="outlined"
         style={styles.input}
         value={email}
