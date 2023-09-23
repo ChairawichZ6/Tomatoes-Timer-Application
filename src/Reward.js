@@ -26,7 +26,7 @@ const Reward = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [selectedPicture, setSelectedPicture] = useState(null);
   const [isReadyToOpen, setIsReadyToOpen] = useState(true); // Initially, the user is ready to open
-  const [remainingTime, setRemainingTime] = useState(60); // 1 minute in seconds
+  const [remainingTime, setRemainingTime] = useState(1500); // 25 minute in seconds
   const { user, setUser } = useContext(AuthContext); 
 
   const navigation = useNavigation();
@@ -65,7 +65,7 @@ const Reward = () => {
       setIsVisible(true);
 
       // Reset the timer for the next 1 minute
-      setRemainingTime(60);
+      setRemainingTime(1500);
       setIsReadyToOpen(false); // Set to "Not Ready" when revealing a picture
 
       // Define alert title and message based on the selected image

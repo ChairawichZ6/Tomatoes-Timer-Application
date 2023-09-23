@@ -39,6 +39,7 @@ const Profile = ({ navigation }) => {
   const customStyle = {
     backgroundColor: changeCardBG, // Your custom styles here
     padding: 10,
+    marginBottom: 10,
   };
 
   useEffect(() => {
@@ -114,7 +115,7 @@ const Profile = ({ navigation }) => {
         <View style={styles.infoCard}>
           <Image source={require("../assets/Human.png")} style={styles.logo} />
           <View style={styles.infoTextBorder}>
-            <Text style={styles.emailText}>UserID: {email}</Text>
+            <Text style={styles.emailText}>Username: {email}</Text>
             <View style={styles.passwordContainer}>
               <Text style={[styles.passwordText, { marginRight: 10 }]}>
                 Password: {showPassword ? password : "********"}
@@ -270,10 +271,10 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     textAlign: "center",
     color: "#e80f0e",
-    backgroundColor: "#FFDF00",
+    backgroundColor: "#FFF",
     padding: 10,
-    borderRadius: 10,
-    borderWidth: 2,
+    borderRadius: 0,
+    borderWidth: 0,
     borderColor: "#F28500",
   },
   passwordContainer: {
@@ -303,22 +304,22 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   tutorialButton: {
-    backgroundColor: "blue",
+    backgroundColor: "#0074e4",
     // borderRadius: 25,
     marginRight: 10,
   },
   musicButton: {
-    backgroundColor: "purple",
+    backgroundColor: "#4caf50",
     // borderRadius: 25,
     marginRight: 10,
   },
   rewardButton: {
-    backgroundColor: "green",
+    backgroundColor: "#ff5733",
     // borderRadius: 25,
     marginRight: 10,
   },
   logoutButton: {
-    backgroundColor: "red",
+    backgroundColor: "#808080",
     // borderRadius: 25,
     marginLeft: screenWidth <= 360 ? "5%" : 20,
   },
