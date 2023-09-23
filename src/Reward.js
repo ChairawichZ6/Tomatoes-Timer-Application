@@ -214,4 +214,3 @@ const styles = StyleSheet.create({
 
 export default Reward;
 
-//เหลือทำร่วมกับ Score System
