@@ -19,7 +19,7 @@ const Register = ({ navigation }) => {
     }
 
     if (email.length < 8) {
-      Alert.alert("Error", "UserID must be at least 8 characters.");
+      Alert.alert("Error", "Username must be at least 8 characters.");
       return;
     }
 
