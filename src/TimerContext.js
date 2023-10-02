@@ -4,9 +4,9 @@ const TimerContext = createContext();
 
 const PHASES = [
     { name: "Work", duration: 25 * 60 }, // 25 minutes (0)
-    { name: "Short Break", duration: 1 * 60 }, // 5 minutes (1)
+    { name: "Short Break", duration: 5 * 60 }, // 5 minutes (1)
     { name: "Work", duration: 25 * 60 }, // 25 minutes (2)
-    { name: "Long Break", duration: 1 * 60 }, // 15 minutes (3)
+    { name: "Long Break", duration: 15 * 60 }, // 15 minutes (3)
   ];
 
 export const TimerProvider = ({ children }) => {
