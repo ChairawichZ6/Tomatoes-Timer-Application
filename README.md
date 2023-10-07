@@ -39,7 +39,7 @@ Environments
 
 
 ## ตัวอย่างแอปพลิเคชัน Tomatoes Timer
-![Tomatoes Application V 3](https://github.com/ChairawichZ6/Tomatoes-Timer-Application/assets/70460005/33ae61e9-4dab-4855-a315-267e7414936e)
+![](https://github.com/ChairawichZ6/Tomatoes-Timer-Application/blob/master/Tomatoes%20Application%20Demo.gif)
 
 
 รวมรูปภาพหรือ GIF ของแอปพลิเคชันของคุณที่นี่เพื่อให้ผู้ใช้ได้มีภาพรวมที่รวดเร็ว
