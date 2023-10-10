@@ -273,11 +273,11 @@ const Timer = () => {
         <View style={styles.alertOverlay}>
           <View style={styles.alertContainer}>
             <Text style={styles.alertText}>
-              {`The ${previousPhaseName} phase has ended..`}
+              {`The ${previousPhaseName} phase has ended.`}
             </Text>
             {isTimerEndedTextVisible && (
               <Text style={styles.timerEndedText}>
-                Pomodoro Timer was ended.
+                Pomodoro Timer was ended
               </Text>
             )}
             <TouchableOpacity
